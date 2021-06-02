@@ -1,0 +1,16 @@
+before:
+  hooks:
+    - go mod download
+builds:
+  - id: main
+    main: ./main.go
+    binary: airctl
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
