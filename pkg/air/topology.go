@@ -12,9 +12,7 @@ import (
 var topologyPath = "topology/"
 
 type topology struct {
-	Url     string `json:"url"`
-	Id      string `json:"id"`
-	Name    string `json:"name"`
+	GenericResource
 	Title   string `json:"title"`
 	Doc     string `json:"documentation,omitempty"`
 	Diagram string `json:"diagram_url,omitempty"`
@@ -68,6 +66,13 @@ func (c *Client) ListTopologies() error {
 	return nil
 }
 
+func topoGeneralizer(topos []topology) (result []GenericResourcer) {
+	for _, topo := range topos {
+		result = append(result, topo.GenericResource)
+	}
+	return result
+}
+
 func (c *Client) GetTopology(input string) error {
 
 	topos, err := c.retrieveTopologies()
@@ -75,7 +80,7 @@ func (c *Client) GetTopology(input string) error {
 		return err
 	}
 
-	id, err := c.getResourceID(input, topos)
+	id, err := c.getResourceID(input, topoGeneralizer(topos))
 	if err != nil {
 		return err
 	}

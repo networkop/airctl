@@ -31,18 +31,21 @@ func NewResource(c *cli.Cli) *cli.Resource {
 }
 
 func newGetCommand(c *cli.Cli) *cobra.Command {
+	var quiet bool
 	cmd := &cobra.Command{
 		Use:     "sim ( ID | Name )",
 		Aliases: []string{"simulation"},
 		Short:   "Get simulations",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return utils.ProcessError(c.Air.ListSimulations())
+				return utils.ProcessError(c.Air.ListSimulations(quiet))
 			}
 
-			return utils.ProcessError(c.Air.GetSimulation(args[0]))
+			return utils.ProcessError(c.Air.GetSimulation(args[0], quiet))
 		},
 	}
+
+	cmd.PersistentFlags().BoolVarP(&quiet, "quiet", "q", false, "Only output UUIDs")
 	return cmd
 }
 

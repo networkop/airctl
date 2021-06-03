@@ -28,17 +28,19 @@ func NewResource(c *cli.Cli) *cli.Resource {
 }
 
 func newGetCommand(c *cli.Cli) *cobra.Command {
-
+	var quiet bool
 	cmd := &cobra.Command{
 		Use:   "account",
 		Short: "Get accounts",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return utils.ProcessError(c.Air.ListAccounts())
+				return utils.ProcessError(c.Air.ListAccounts(quiet))
 			}
 
-			return utils.ProcessError(c.Air.GetAccount(args[0]))
+			return utils.ProcessError(c.Air.GetAccount(args[0], quiet))
 		},
 	}
+
+	cmd.PersistentFlags().BoolVarP(&quiet, "quiet", "q", false, "Only output UUIDs")
 	return cmd
 }

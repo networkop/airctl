@@ -42,7 +42,7 @@ func Execute() error {
 		NewSetCommand(cli),
 		NewCreateCommand(cli),
 		NewDeleteCommand(cli),
-		NewLoginCommand(os.Stdout),
+		NewLoginCommand(cli),
 	)
 
 	return root.Execute()

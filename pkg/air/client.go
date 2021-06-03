@@ -17,11 +17,11 @@ var (
 	jsonContentType = "application/json"
 )
 
-type LoginFailed struct {
+type NonAuthn struct {
 	Err error
 }
 
-func (e *LoginFailed) Error() string {
+func (e *NonAuthn) Error() string {
 	return fmt.Sprintf("Unauthenticated or login expired. Please re-login")
 }
 
@@ -48,11 +48,14 @@ func NewClient() (*Client, error) {
 		token: fmt.Sprintf("Bearer %s", auth.Token),
 	}, nil
 }
+
 func (c *Client) Post(path string, payload interface{}) (*http.Response, error) {
 	jsonReq, err := json.Marshal(payload)
 	if err != nil {
 		return nil, err
 	}
+	logrus.Debugf("POST payload: %+v", string(jsonReq))
+
 	req, err := http.NewRequest(http.MethodPost, c.makePath(path), bytes.NewBuffer(jsonReq))
 	if err != nil {
 		return nil, err
@@ -70,6 +73,36 @@ func (c *Client) Post(path string, payload interface{}) (*http.Response, error) 
 
 	logrus.Debugf("Response: \n%+v", resp)
 	return resp, nil
+}
+
+func (c *Client) Delete(p string) (*http.Response, error) {
+
+	req, err := http.NewRequest(http.MethodDelete, c.makePath(p), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("content-type", jsonContentType)
+	req.Header.Set("accept", jsonContentType)
+	req.Header.Set("Authorization", c.token)
+
+	logrus.Debugf("Request: \n%+v", req)
+	resp, err := c.httpC.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	logrus.Debugf("Response: \n%+v", resp)
+
+	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+		return resp, err
+	}
+
+	if resp.StatusCode == 403 {
+		return nil, &NonAuthn{}
+	}
+
+	return nil, fmt.Errorf("Received response %s", resp.Status)
 }
 
 func (c *Client) Get(p string) (*http.Response, error) {

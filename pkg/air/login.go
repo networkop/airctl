@@ -1,15 +1,29 @@
 package air
 
 import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+
 	"github.com/networkop/airctl/internal/config"
-	"github.com/sirupsen/logrus"
 )
 
 var loginPath = "login/"
 
-func Login(token string) error {
+type LoginData struct {
+	Id   string `json:"id"`
+	Name string `json:"username"`
+}
 
-	logrus.Infof("Authenticating")
+type LoginFailed struct {
+}
+
+func (e *LoginFailed) Error() string {
+	return fmt.Sprintf("Login Failed")
+}
+
+func (c *Client) Login(token string) error {
+
 	auth := config.NewAuthData()
 
 	if err := auth.SaveAuth(token); err != nil {
@@ -25,10 +39,25 @@ func Login(token string) error {
 		return err
 	}
 
-	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
-		logrus.Infof("Authentication successful")
+	defer resp.Body.Close()
 
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
 	}
+
+	var login LoginData
+
+	err = json.Unmarshal(body, &login)
+	if err != nil {
+		return &LoginFailed{}
+	}
+
+	if login.Name == "" {
+		return &LoginFailed{}
+	}
+
+	fmt.Println("Authentication successful")
 
 	return nil
 }

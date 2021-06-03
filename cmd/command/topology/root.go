@@ -28,6 +28,7 @@ func NewResource(c *cli.Cli) *cli.Resource {
 }
 
 func newGetCommand(c *cli.Cli) *cobra.Command {
+	var quiet bool
 	cmd := &cobra.Command{
 		Use:     "topo",
 		Aliases: []string{"topology"},
@@ -40,17 +41,18 @@ func newGetCommand(c *cli.Cli) *cobra.Command {
 			return utils.ProcessError(c.Air.GetTopology(args[0]))
 		},
 	}
+	cmd.PersistentFlags().BoolVarP(&quiet, "quiet", "q", false, "Only output UUIDs")
 	return cmd
 }
 
 func newSetCommand(c *cli.Cli) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "inspect <ID>",
-		Aliases: []string{"inspect"},
+		Use:     "topo",
+		Aliases: []string{"topology"},
 
-		Short: "Inspect simulation by its ID",
+		Short: "Set topology",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return utils.ProcessError(c.Air.GetSimulation(args[0]))
+			return nil
 		},
 	}
 	return cmd
@@ -58,12 +60,12 @@ func newSetCommand(c *cli.Cli) *cobra.Command {
 
 func newCreateCommand(c *cli.Cli) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "inspect <ID>",
-		Aliases: []string{"inspect"},
+		Use:     "topo",
+		Aliases: []string{"topology"},
 
-		Short: "Inspect simulation by its ID",
+		Short: "Create a topology from file",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return utils.ProcessError(c.Air.GetSimulation(args[0]))
+			return nil
 		},
 	}
 	return cmd
@@ -71,12 +73,12 @@ func newCreateCommand(c *cli.Cli) *cobra.Command {
 
 func newDelCommand(c *cli.Cli) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "inspect <ID>",
-		Aliases: []string{"inspect"},
+		Use:     "topo",
+		Aliases: []string{"topology"},
 
-		Short: "Inspect simulation by its ID",
+		Short: "Delete topology by name or ID",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return utils.ProcessError(c.Air.GetSimulation(args[0]))
+			return nil
 		},
 	}
 	return cmd

@@ -48,11 +48,18 @@ func (c *Client) retrieveAccounts() ([]account, error) {
 	return result.List, nil
 }
 
-func (c *Client) ListAccounts() error {
+func (c *Client) ListAccounts(quiet bool) error {
 
 	accs, err := c.retrieveAccounts()
 	if err != nil {
 		return err
+	}
+
+	if quiet {
+		for _, acc := range accs {
+			fmt.Println(acc.ID)
+		}
+		return nil
 	}
 
 	tw := table.NewWriter()
@@ -93,7 +100,7 @@ func (c *Client) getAccountID(input string) string {
 
 }
 
-func (c *Client) GetAccount(input string) error {
+func (c *Client) GetAccount(input string, quiet bool) error {
 
 	id := c.getAccountID(input)
 
@@ -114,6 +121,11 @@ func (c *Client) GetAccount(input string) error {
 	err = json.Unmarshal(body, &acc)
 	if err != nil {
 		return err
+	}
+
+	if quiet {
+		fmt.Println(acc.ID)
+		return nil
 	}
 
 	transformer := text.NewJSONTransformer("", "\t")

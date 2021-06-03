@@ -25,10 +25,8 @@ var (
 )
 
 type simulation struct {
-	Url      string   `json:"url"`
-	Id       string   `json:"id"`
+	GenericResource
 	State    string   `json:"state"`
-	Name     string   `json:"name"`
 	Title    string   `json:"title"`
 	Services []string `json:"services"`
 }
@@ -71,11 +69,18 @@ func (c *Client) retrieveSimulations() ([]simulation, error) {
 }
 
 // Retrieves the list of all simulations and prints them in a table
-func (c *Client) ListSimulations() error {
+func (c *Client) ListSimulations(quiet bool) error {
 
 	sims, err := c.retrieveSimulations()
 	if err != nil {
 		return err
+	}
+
+	if quiet {
+		for _, sim := range sims {
+			fmt.Println(sim.Id)
+		}
+		return nil
 	}
 
 	tw := table.NewWriter()
@@ -113,16 +118,22 @@ func (c *Client) retrieveSimulation(id string) (simulation, error) {
 	return result, nil
 }
 
-// Prints the information about a specific simulation
-func (c *Client) GetSimulation(input string) error {
-	//var uuid string
+func simGeneralizer(sims []simulation) (result []GenericResourcer) {
+	for _, sim := range sims {
+		result = append(result, sim.GenericResource)
+	}
+	return result
+}
 
-	sims, err := c.retrieveSimulation(input)
+// Prints the information about a specific simulation
+func (c *Client) GetSimulation(input string, quiet bool) error {
+
+	sims, err := c.retrieveSimulations()
 	if err != nil {
 		return err
 	}
 
-	id, err := c.getResourceID(input, sims)
+	id, err := c.getResourceID(input, simGeneralizer(sims))
 	if err != nil {
 		return err
 	}
@@ -130,6 +141,11 @@ func (c *Client) GetSimulation(input string) error {
 	sim, err := c.retrieveSimulation(id)
 	if err != nil {
 		return err
+	}
+
+	if quiet {
+		fmt.Println(sim.Id)
+		return nil
 	}
 
 	transformer := text.NewJSONTransformer("", "\t")

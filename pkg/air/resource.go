@@ -6,40 +6,65 @@ import (
 	"github.com/google/uuid"
 )
 
-type GenericResource struct {
-	Name string
-	Id   string
+type GenericResourcer interface {
+	GetName() string
+	GetId() string
 }
 
-type GenericResourceList struct {
+type GenericResource struct {
+	Name string `json:"name"`
+	Id   string `json:"id"`
+	Url  string `json:"url"`
+}
+
+type Mylist struct {
 	List []GenericResource
 }
 
-// Gets resource ID trying to match input as UUID and Name
-func (c *Client) getResourceID(input string, objs interface{}) (string, error) {
+func (r GenericResource) GetName() string {
+	return r.Name
+}
 
+func (r GenericResource) GetId() string {
+	return r.Id
+}
+
+type MatchFailed struct {
+	Match string
+}
+
+type MultipleMatch MatchFailed
+
+func (e *MultipleMatch) Error() string {
+	return fmt.Sprintf("Found more than one match for a name '%s'. Use UUID instead.\n", e.Match)
+}
+
+func (e *MatchFailed) Error() string {
+	return fmt.Sprintf("Could not find a match for %s\n", e.Match)
+}
+
+// Gets resource ID trying to match input as UUID and Name
+func (c *Client) getResourceID(input string, objs []GenericResourcer) (string, error) {
 	_, err := uuid.Parse(input)
 	if err == nil {
 		return input, nil
 	}
 
-	l, ok := objs.(GenericResourceList)
-	if !ok {
-		return "", fmt.Errorf("Malformed resource list %+v", objs)
-	}
-
 	var matches []string
-	for _, resource := range l.List {
-
-		if resource.Name != "" && resource.Name == input {
-			matches = append(matches, resource.Id)
+	for _, obj := range objs {
+		if obj.GetName() != "" && obj.GetName() == input {
+			matches = append(matches, obj.GetId())
 		}
 
 	}
 
 	if len(matches) > 1 {
-		return "", fmt.Errorf("Found more than one match with name %s", input)
+		return "", &MultipleMatch{Match: input}
 	}
 
-	return "", fmt.Errorf("Could not find a match for %s", input)
+	if len(matches) == 1 {
+		return matches[0], nil
+	}
+
+	return "", &MatchFailed{Match: input}
 }

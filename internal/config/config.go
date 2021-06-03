@@ -61,7 +61,7 @@ func readAuth(path string) *AuthData {
 func (c *AuthData) SaveAuth(token string) error {
 	c.Token = token
 
-	logrus.Infof("Saving token data %+v", c)
+	logrus.Debugf("Saving token data in %s", c.configFile)
 	bytes, err := yaml.Marshal(c)
 	if err != nil {
 		return err
