@@ -86,7 +86,10 @@ func newCreateCommand(c *cli.Cli) *cobra.Command {
 				return utils.ProcessError(c.Air.CreateCITC())
 			}
 			if simID != "" {
-				return utils.ProcessError(c.Air.CreateSimulation(simID))
+				return utils.ProcessError(c.Air.CloneSimulation(simID))
+			}
+			if topo != "" {
+				return utils.ProcessError(c.Air.CreateSimulation(topo))
 			}
 			return fmt.Errorf("Either simID or topoID must be provided")
 		},
@@ -99,14 +102,12 @@ func newCreateCommand(c *cli.Cli) *cobra.Command {
 
 func newDelCommand(c *cli.Cli) *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "sim ( ID | Name )",
-
+		Use:   "sim <ID...>",
+		Args:  cobra.MinimumNArgs(1),
 		Short: "Delete simulation",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 1 {
-				return fmt.Errorf("Expecting 1 arguments")
-			}
-			return utils.ProcessError(c.Air.SetSimulation(args[0], air.SimulationState.Destroy))
+
+			return utils.ProcessError(c.Air.DeleteSim(args))
 
 		},
 	}

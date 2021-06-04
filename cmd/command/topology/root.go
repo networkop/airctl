@@ -14,7 +14,7 @@ func NewResource(c *cli.Cli) *cli.Resource {
 			return newGetCommand(c)
 		},
 		Setter: func() *cobra.Command {
-			return newSetCommand(c)
+			return nil
 		},
 		Creater: func() *cobra.Command {
 			return newCreateCommand(c)
@@ -38,34 +38,21 @@ func newGetCommand(c *cli.Cli) *cobra.Command {
 				return utils.ProcessError(c.Air.ListTopologies())
 			}
 
-			return utils.ProcessError(c.Air.GetTopology(args[0]))
+			return utils.ProcessError(c.Air.GetTopology(args[0], quiet))
 		},
 	}
 	cmd.PersistentFlags().BoolVarP(&quiet, "quiet", "q", false, "Only output UUIDs")
 	return cmd
 }
 
-func newSetCommand(c *cli.Cli) *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "topo",
-		Aliases: []string{"topology"},
-
-		Short: "Set topology",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return nil
-		},
-	}
-	return cmd
-}
-
 func newCreateCommand(c *cli.Cli) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "topo",
+		Use:     "topo FILE",
 		Aliases: []string{"topology"},
-
-		Short: "Create a topology from file",
+		Args:    cobra.ExactValidArgs(1),
+		Short:   "Create a topology from dot file",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return nil
+			return utils.ProcessError(c.Air.CreateTopology(args[0]))
 		},
 	}
 	return cmd
@@ -73,12 +60,12 @@ func newCreateCommand(c *cli.Cli) *cobra.Command {
 
 func newDelCommand(c *cli.Cli) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "topo",
+		Use:     "topo <ID...>",
 		Aliases: []string{"topology"},
-
-		Short: "Delete topology by name or ID",
+		Args:    cobra.MinimumNArgs(1),
+		Short:   "Delete topology by name or ID",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return nil
+			return utils.ProcessError(c.Air.DelTopology(args))
 		},
 	}
 	return cmd

@@ -29,6 +29,7 @@ type simulation struct {
 	State    string   `json:"state"`
 	Title    string   `json:"title"`
 	Services []string `json:"services"`
+	Topology string   `json:"topology,omitempty"`
 }
 
 type simList struct {
@@ -189,10 +190,10 @@ func (c *Client) SetSimulation(id string, state string) error {
 	return nil
 }
 
-func (c *Client) CreateSimulation(simID string) error {
+func (c *Client) CloneSimulation(simID string) error {
 	_, err := uuid.Parse(simID)
 	if err != nil {
-		return fmt.Errorf("Malformed simID: %s", simID)
+		return fmt.Errorf("Malformed ID: %s", simID)
 	}
 
 	resp, err := c.Post(simulationPath+simID+"/control/", simAction{
@@ -216,10 +217,41 @@ func (c *Client) CreateSimulation(simID string) error {
 	}
 
 	if result.Result != "success" {
-		return fmt.Errorf("failed to create sim %s", result.Result)
+		return fmt.Errorf("failed to clone sim %s", result.Result)
 	}
 
 	fmt.Println(result.Simulation.Id)
+
+	return nil
+}
+
+func (c *Client) CreateSimulation(topoID string) error {
+	_, err := uuid.Parse(topoID)
+	if err != nil {
+		return fmt.Errorf("Malformed ID: %s", topoID)
+	}
+
+	resp, err := c.Post(simulationPath, simulation{
+		Topology: topoID,
+	})
+	if err != nil {
+		return err
+	}
+
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	var result simulation
+	err = json.Unmarshal(body, &result)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(result.Id)
 
 	return nil
 }
@@ -255,4 +287,29 @@ func (c *Client) CreateCITC() error {
 	}
 
 	return c.CreateSimulation(citc.Id)
+}
+
+func (c *Client) DeleteSim(inputs []string) error {
+
+	sims, err := c.retrieveSimulations()
+	if err != nil {
+		return err
+	}
+
+	for _, input := range inputs {
+		id, err := c.getResourceID(input, simGeneralizer(sims))
+		if err != nil {
+			return err
+		}
+
+		err = c.SetSimulation(id, SimulationState.Destroy)
+		if err != nil {
+			return err
+		}
+
+		fmt.Println(id)
+
+	}
+
+	return nil
 }
