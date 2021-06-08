@@ -162,6 +162,10 @@ func (c *Client) CreateSSHService(intf string, simID, name string) error {
 	}
 	logrus.Debugf("Identified interface id : %s", intfID)
 
+	if name == "" {
+		name = fmt.Sprintf(("%s-ssh"), intf)
+	}
+
 	resp, err := c.Post(servicePath, serviceRequest{
 		Name:  name,
 		Sim:   simID,

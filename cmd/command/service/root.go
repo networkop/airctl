@@ -1,6 +1,8 @@
 package service
 
 import (
+	"fmt"
+
 	"github.com/networkop/airctl/cmd/command/cli"
 	"github.com/networkop/airctl/internal/utils"
 	"github.com/spf13/cobra"
@@ -55,6 +57,9 @@ func newCreateCommand(c *cli.Cli) *cobra.Command {
 		Short:   "Create SSH service",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if simID == "" {
+				return fmt.Errorf("simulation ID is mandatory")
+			}
 			return utils.ProcessError(c.Air.CreateSSHService(args[0], simID, name))
 		},
 	}
