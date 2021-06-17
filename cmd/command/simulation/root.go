@@ -34,7 +34,7 @@ func newGetCommand(c *cli.Cli) *cobra.Command {
 	var quiet bool
 	cmd := &cobra.Command{
 		Use:     "sim ( ID | Name )",
-		Aliases: []string{"simulation"},
+		Aliases: []string{"sims", "simulation", "simulations"},
 		Short:   "Get simulations",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
@@ -51,9 +51,9 @@ func newGetCommand(c *cli.Cli) *cobra.Command {
 
 func newSetCommand(c *cli.Cli) *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "sim ( ID | Name ) up | down",
-
-		Short: "Set the state of a simulation",
+		Use:     "sim ( ID | Name ) up | down",
+		Aliases: []string{"simulation"},
+		Short:   "Set the state of a simulation",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) != 2 {
 				return fmt.Errorf("Expecting 2 arguments")
@@ -78,7 +78,8 @@ func newCreateCommand(c *cli.Cli) *cobra.Command {
 	var simID, topo string
 	var citc bool
 	cmd := &cobra.Command{
-		Use: "sim",
+		Use:     "sim",
+		Aliases: []string{"simulation"},
 		//Args:  cobra.ExactValidArgs(1),
 		Short: "Create simulation from topology or another sim",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -102,9 +103,10 @@ func newCreateCommand(c *cli.Cli) *cobra.Command {
 
 func newDelCommand(c *cli.Cli) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "sim <ID...>",
-		Args:  cobra.MinimumNArgs(1),
-		Short: "Delete simulation",
+		Use:     "sim <ID...>",
+		Aliases: []string{"simulation"},
+		Args:    cobra.MinimumNArgs(1),
+		Short:   "Delete simulation",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			return utils.ProcessError(c.Air.DeleteSim(args))

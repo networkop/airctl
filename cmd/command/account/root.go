@@ -30,8 +30,9 @@ func NewResource(c *cli.Cli) *cli.Resource {
 func newGetCommand(c *cli.Cli) *cobra.Command {
 	var quiet bool
 	cmd := &cobra.Command{
-		Use:   "account",
-		Short: "Get accounts",
+		Use:     "account",
+		Aliases: []string{"acc", "accs", "accounts"},
+		Short:   "Get accounts",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return utils.ProcessError(c.Air.ListAccounts(quiet))

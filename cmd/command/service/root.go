@@ -34,7 +34,7 @@ func newGetCommand(c *cli.Cli) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "svc",
-		Aliases: []string{"service"},
+		Aliases: []string{"service", "services", "svcs"},
 		Short:   "Get services",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {

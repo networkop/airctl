@@ -30,8 +30,9 @@ func NewResource(c *cli.Cli) *cli.Resource {
 func newGetCommand(c *cli.Cli) *cobra.Command {
 
 	cmd := &cobra.Command{
-		Use:   "training",
-		Short: "Get trainings",
+		Use:     "training",
+		Aliases: []string{"trainings"},
+		Short:   "Get trainings",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			return utils.ProcessError(c.Air.GetTrainings())
 		},

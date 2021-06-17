@@ -31,7 +31,7 @@ func newGetCommand(c *cli.Cli) *cobra.Command {
 	var quiet bool
 	cmd := &cobra.Command{
 		Use:     "topo",
-		Aliases: []string{"topology"},
+		Aliases: []string{"topology", "topos", "topologies"},
 		Short:   "Get topologies",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
