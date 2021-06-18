@@ -85,10 +85,10 @@ func (c *Client) ListSimulations(quiet bool) error {
 	}
 
 	tw := table.NewWriter()
-	tw.AppendHeader(table.Row{"Name", "ID", "State"})
+	tw.AppendHeader(table.Row{"Title", "ID", "State"})
 
 	for _, sim := range sims {
-		tw.AppendRow(table.Row{sim.Name, sim.Id, sim.State})
+		tw.AppendRow(table.Row{sim.Title, sim.Id, sim.State})
 	}
 
 	fmt.Println(tw.Render())
