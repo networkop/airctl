@@ -1,6 +1,12 @@
 before:
   hooks:
     - go mod download
+archives:
+- files:
+  - none*
+  name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+  replacements:
+    amd64: x86_64
 builds:
   - id: main
     main: ./main.go
