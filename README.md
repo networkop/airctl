@@ -2,20 +2,17 @@
 
 ## Installation
 
-Check the latest released version [here](https://github.com/networkop/airctl/releases) and use it with one of the below options.
-
-### Install compiled binaries
+To install the latest stable version run:
 
 ```
-curl -L https://github.com/networkop/airctl/releases/download/v0.0.1/airctl_0.0.1_linux_amd64.tar.gz | tar -zxvf - -C ~/.local/bin
+curl -L https://github.com/networkop/airctl/releases/latest/download/airctl_linux_x86_64.tar.gz | tar -zxvf - -C ~/.local/bin
 ```
 
 ### Build from source 
 
-
+This comman will install the latest version from the `main` branch:
 ```
-$ go install github.com/networkop/airctl@v0.0.1 
-go: downloading github.com/networkop/airctl v0.0.1
+$ go install github.com/networkop/airctl@latest
 $ ls ~/go/bin/airctl
 /home/user/go/bin/airctl
 ```

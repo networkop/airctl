@@ -13,6 +13,8 @@ builds:
     binary: airctl
     env:
       - CGO_ENABLED=0
+    ldflags:
+    - -s -w -X main.Version={{.Tag}} -X main.GitCommit={{.ShortCommit}}
     goos:
       - linux
       - darwin

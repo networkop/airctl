@@ -12,7 +12,7 @@ import (
 
 var debug bool
 
-func Execute() error {
+func Execute(version, gitCommit string) error {
 
 	logrus.SetOutput(os.Stdout)
 
@@ -31,7 +31,7 @@ func Execute() error {
 			}
 
 		},
-		Version: fmt.Sprintf("alpha"),
+		Version: fmt.Sprintf("version: %q, commit: %q", version, gitCommit),
 	}
 
 	cobra.EnableCommandSorting = false
